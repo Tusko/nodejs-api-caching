@@ -4,12 +4,6 @@
 [dev]
   publish = "dist"
 
-# [[redirects]]
-#   from = "/:code"
-#   to = "/.netlify/functions/:code"
-#   status = 200
-#   force = true
-
 [[redirects]]
   from = "/:splat"
   to = "/.netlify/functions/:splat"
