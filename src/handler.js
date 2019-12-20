@@ -49,9 +49,9 @@ exports.processing = (req, res) => {
   }
 
   axios(parsedUrl)
-    .then(json => {
+    .then(res => {
       mcache.put(cacheKey, json, cacheTime * 1000);
-      res.json(this.response(true, json));
+      res.json(this.response(true, res.data));
     })
     .catch(e => res.json(this.response(true, e.message)));
 };
