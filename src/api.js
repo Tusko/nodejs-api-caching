@@ -17,6 +17,7 @@ app
   .use(responseTime());
 
 router.get("*", func.processing);
+router.get("/", func.processing);
 router.get("/stats", func.cacheManager);
 
 app.use(`/.netlify/functions/api`, router);
