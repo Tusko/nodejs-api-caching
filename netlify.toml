@@ -11,7 +11,7 @@
 #   force = true
 
 [[redirects]]
-  from = "/*"
+  from = "/splat"
   to = "/.netlify/functions/:splat"
 
 [[headers]]
