@@ -1,20 +1,23 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const express = require("express");
+const logger = require("morgan");
+const app = express();
+const apicache = require("apicache");
+const port = process.env.PORT || 3000;
+const func = require("./functions.js");
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+let cache = apicache.middleware;
 
-var app = express();
+app
+  .use(logger("dev"))
+  .use(express.json())
+  .use(express.urlencoded({ extended: false }))
+  .use(cache("1 day"));
 
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+app.get("/", func.processing);
+app.get("/list", func.cacheManager);
 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.listen(port, () =>
+  console.log(`app listening on http://localhost:${port}`)
+);
 
 module.exports = app;
