@@ -1,4 +1,4 @@
-const fetch = require("node-fetch");
+const axios = require("axios");
 const mcache = require("memory-cache");
 const log = (...args) => console.log("→", ...args);
 
@@ -24,7 +24,7 @@ exports.response = (err = false, msg = "ok", shortURL) => {
   return response;
 };
 exports.processing = (req, res) => {
-  const parsedUrl = req._parsedUrl.href.split("/?url=")[1];
+  const parsedUrl = decodeURIComponent(req._parsedUrl.href.split("/?url=")[1]);
 
   if (!req.query.url) {
     log("📦", ` URL is empty`);
@@ -52,18 +52,22 @@ exports.processing = (req, res) => {
     return;
   }
 
-  fetch(parsedUrl)
-    .then(response => {
-      log("📦", ` Fetching ${parsedUrl}`);
-      response.json().then(json => {
-        mcache.put(cacheKey, json, cacheTime * 1000);
-        res.json(this.response(true, json));
-      });
+  axios(parsedUrl)
+    .then(json => {
+      mcache.put(cacheKey, json, cacheTime * 1000);
+      res.json(this.response(true, json));
     })
     .catch(e => res.json(this.response(true, e.message)));
 };
 
 exports.cacheManager = (req, res) => {
   log("📦", ` Loading cache items`);
-  res.json(this.response(false, mcache.keys()));
+  res.json(
+    this.response(false, {
+      memory: {
+        items: mcache.keys(),
+        size: mcache.memsize()
+      }
+    })
+  );
 };
