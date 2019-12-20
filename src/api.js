@@ -6,10 +6,12 @@ const router = express.Router();
 const apicache = require("apicache");
 const func = require("./handler");
 const responseTime = require("response-time");
+const cors = require("cors");
 
 let cache = apicache.middleware;
 
 app
+  .use(cors())
   .use(logger("dev"))
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
