@@ -5,9 +5,10 @@
   publish = "dist"
 
 [[redirects]]
-  from = '/api/*'
-  to = '/.netlify/functions/:splat'
+  from = "/:code"
+  to = "/.netlify/functions/:code"
   status = 200
+  force = true
 
 [[headers]]
   for = "/*"
