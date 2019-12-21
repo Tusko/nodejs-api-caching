@@ -43,16 +43,15 @@ exports.processing = (req, res) => {
   if (cachedBody && cacheTime !== "0") {
     res.status(304);
     log("📦", ` Cache response ${parsedUrl}`);
-    res.send(this.response(true, cachedBody));
+    res.send(this.response(true, JSON.parse(cachedBody)));
     return;
   }
 
   axios(parsedUrl)
     .then(response => {
       const resObject = response.data;
-      const time = cacheTime * 1000;
       if (_.isObject(resObject)) {
-        mcache.put(cacheKey, resObject, time);
+        mcache.put(cacheKey, JSON.stringify(resObject), cacheTime * 1000);
         res.json(
           this.response(
             false,
