@@ -18,7 +18,6 @@ exports.response = (err = false, msg = "ok", data) => {
 };
 exports.processing = (req, res) => {
   const parsedUrl = decodeURIComponent(req._parsedUrl.href.split("/?url=")[1]);
-  hrstart = process.hrtime();
 
   if (!req.query.url) {
     log("📦", ` URL is empty`);
@@ -38,7 +37,7 @@ exports.processing = (req, res) => {
   const cacheTime = req.query.cache || 86400;
   const cachedBody = mcache.get(cacheKey);
 
-  log("📦", cacheKey);
+  res.set("X-Md5-key", cacheKey);
 
   //  return cached data
   if (cachedBody && cacheTime !== "0") {
