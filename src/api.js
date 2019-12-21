@@ -3,19 +3,15 @@ const serverless = require("serverless-http");
 const logger = require("morgan");
 const app = express();
 const router = express.Router();
-const apicache = require("apicache");
 const func = require("./handler");
 const responseTime = require("response-time");
 const cors = require("cors");
-
-let cache = apicache.middleware;
 
 app
   .use(cors())
   .use(logger("dev"))
   .use(express.json())
   .use(express.urlencoded({ extended: false }))
-  .use(cache("1 hour"))
   .use(responseTime());
 
 // router.get("*", func.processing);
