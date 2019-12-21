@@ -2,6 +2,7 @@ const axios = require("axios");
 const mcache = require("memory-cache");
 const _ = require("lodash");
 const log = (...args) => console.log("→", ...args);
+const md5 = require("md5");
 
 const validURL = str => {
   var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
@@ -33,7 +34,7 @@ exports.processing = (req, res) => {
     return;
   }
 
-  const cacheKey = `__transient__${parsedUrl}`;
+  const cacheKey = md5(`__transient__${parsedUrl}`);
   const cacheTime = req.query.cache || 86400;
   const cachedBody = mcache.get(cacheKey);
 

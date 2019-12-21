@@ -12,6 +12,7 @@
     "cors": "^2.8.5",
     "dayjs": "^1.8.18",
     "express": "~4.16.1",
+    "md5": "^2.2.1",
     "memory-cache": "^0.2.0",
     "netlify-lambda": "^1.6.3",
     "response-time": "^2.3.2",
