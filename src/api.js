@@ -18,7 +18,7 @@ app
   .use(cache("1 hour"))
   .use(responseTime());
 
-router.get("*", func.processing);
+// router.get("*", func.processing);
 router.get("/", func.processing);
 router.get("/stats", func.cacheManager);
 

@@ -1,5 +1,6 @@
 const axios = require("axios");
 const mcache = require("memory-cache");
+const _ = require("lodash");
 const log = (...args) => console.log("→", ...args);
 
 const validURL = str => {
@@ -7,20 +8,11 @@ const validURL = str => {
   return pattern.test(str);
 };
 
-const isJson = str => {
-  try {
-    JSON.parse(str);
-  } catch (e) {
-    return false;
-  }
-  return true;
-};
-
-exports.response = (err = false, msg = "ok", shortURL) => {
+exports.response = (err = false, msg = "ok", data) => {
   const response = {
-    url: shortURL,
     message: msg,
-    error: err
+    error: err,
+    data: data
   };
   return response;
 };
@@ -55,9 +47,17 @@ exports.processing = (req, res) => {
 
   axios(parsedUrl)
     .then(response => {
-      if (isJson(response.data)) {
-        mcache.put(cacheKey, response.data, cacheTime * 1000);
-        res.json(this.response(true, response.data));
+      const resObject = response.data;
+      const time = cacheTime * 1000;
+      if (_.isObject(resObject)) {
+        mcache.put(cacheKey, resObject, time);
+        res.json(
+          this.response(
+            false,
+            `Cached for ${cacheTime / 3600} hours`,
+            resObject
+          )
+        );
       } else {
         res.json(this.response(true, `Can't parse JSON from external API`));
       }
