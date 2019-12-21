@@ -10,15 +10,15 @@ const validURL = str => {
 };
 
 exports.response = (err = false, msg = "ok", data) => {
-  const response = {
+  return {
     message: msg,
     error: err,
     data: data
   };
-  return response;
 };
 exports.processing = (req, res) => {
   const parsedUrl = decodeURIComponent(req._parsedUrl.href.split("/?url=")[1]);
+  hrstart = process.hrtime();
 
   if (!req.query.url) {
     log("📦", ` URL is empty`);
@@ -37,6 +37,8 @@ exports.processing = (req, res) => {
   const cacheKey = md5(`__transient__${parsedUrl}`);
   const cacheTime = req.query.cache || 86400;
   const cachedBody = mcache.get(cacheKey);
+
+  log("📦", cacheKey);
 
   //  return cached data
   if (cachedBody && cacheTime !== "0") {
