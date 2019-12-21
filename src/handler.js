@@ -3,16 +3,17 @@ const mcache = require("memory-cache");
 const log = (...args) => console.log("→", ...args);
 
 const validURL = str => {
-  var pattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|" + // domain name
-    "((\\d{1,3}\\.){3}\\d{1,3}))" + // ip (v4) address
-    "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + //port
-    "(\\?[;&amp;a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  );
+  var pattern = /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
   return pattern.test(str);
+};
+
+const isJson = str => {
+  try {
+    JSON.parse(str);
+  } catch (e) {
+    return false;
+  }
+  return true;
 };
 
 exports.response = (err = false, msg = "ok", shortURL) => {
@@ -53,9 +54,13 @@ exports.processing = (req, res) => {
   }
 
   axios(parsedUrl)
-    .then(res => {
-      mcache.put(cacheKey, res.data, cacheTime * 1000);
-      res.json(this.response(true, res.data));
+    .then(response => {
+      if (isJson(response.data)) {
+        mcache.put(cacheKey, response.data, cacheTime * 1000);
+        res.json(this.response(true, response.data));
+      } else {
+        res.json(this.response(true, `Can't parse JSON from external API`));
+      }
     })
     .catch(e => res.json(this.response(true, e.message)));
 };
